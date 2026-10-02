@@ -30,4 +30,18 @@ def calculate_order_total(
     shipping_city: str = "",
 ) -> int | None:
     """Return the order total in kopecks, or None if the order is invalid."""
-    ...
+
+    if validate_order(lines) is not None:
+        return None
+
+    subtotal = 0
+
+    for item in lines:
+        quantity = int(item["qty"])
+        unit_price = int(item["unit_price_kopecks"])
+        subtotal += quantity * unit_price
+
+    vat = subtotal * 20 // 100
+
+    return subtotal + vat
+

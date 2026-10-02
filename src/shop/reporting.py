@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 from shop.inventory import low_stock_items
 from shop.money import format_kopecks
@@ -8,21 +8,34 @@ DEFAULT_LOW_STOCK_THRESHOLD = 10
 
 
 def build_stock_report(
-    stock: dict[str, int], prices: dict[str, int], threshold: int = DEFAULT_LOW_STOCK_THRESHOLD
+    stock: dict[str, int],
+    prices: dict[str, int],
+    threshold: int = DEFAULT_LOW_STOCK_THRESHOLD,
 ) -> str:
-    generated_at = datetime.utcnow().isoformat()
-    total_value: str = ""
+    generated_at = datetime.now(UTC).isoformat()
+    total_value: int = 0
+
     lines = [REPORT_HEADER, f"generated_at={generated_at}"]
+
     for sku, count in sorted(stock.items()):
         unit_price = prices.get(sku, 0)
         value = count * unit_price
         total_value += value
-        lines.append(f"{sku}: {count} x {format_kopecks(unit_price)} = {format_kopecks(value)}")
+
+        lines.append(
+            f"{sku}: {count} x {format_kopecks(unit_price)} "
+            f"= {format_kopecks(value)}"
+        )
+
     low = low_stock_items(stock, threshold)
     low_text = ", ".join(low) if low else "none"
+
     lines.append(f"low stock: {low_text}")
     lines.append(f"total value: {format_kopecks(total_value)}")
+
     return "\n".join(lines)
+
+
 
 
 def stock_health(
