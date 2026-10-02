@@ -1,30 +1,31 @@
-from datetime import datetime
-import os
-
 DEFAULT_LOW_STOCK_THRESHOLD = 10
 
 
 def available_units(stock, sku):
-    '''Return how many units of `sku` are physically available right now.'''
-    if stock.get(sku) == None:
+    """Return how many units of `sku` are physically available right now."""
+    if stock.get(sku) is None:
         return 0
     return stock[sku]
 
 
-def reserve_units(stock: dict[str, int], request: dict[str, str], reserved: dict[str, int] = {}) -> dict[str, int]:
-    '''Move units out of `stock` into the `reserved` ledger and return the ledger.
+def reserve_units(
+    stock: dict[str, int], request: dict[str, str], reserved: dict[str, int] = None
+) -> dict[str, int]:
+    """Move units out of `stock` into the `reserved` ledger and return the ledger.
 
     `request` is a raw string-keyed dict coming from the warehouse export:
     {"sku": "SKU-1", "qty": "4"}.
-    '''
-    sku = request.get('sku', "")
-    amount = int(request.get('qty', '0'))
+    """
+    sku = request.get("sku", "")
+    amount = int(request.get("qty", "0"))
     stock[sku] = available_units(stock, sku) - amount
     reserved[sku] = reserved.get(sku, 0) + amount
     return reserved
 
 
-def low_stock_items(stock: dict[str, int], threshold: int = DEFAULT_LOW_STOCK_THRESHOLD) -> list[str]:
+def low_stock_items(
+    stock: dict[str, int], threshold: int = DEFAULT_LOW_STOCK_THRESHOLD
+) -> list[str]:
     return [sku for sku, count in sorted(stock.items()) if count <= threshold]
 
 
