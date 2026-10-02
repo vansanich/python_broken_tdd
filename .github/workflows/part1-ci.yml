@@ -83,6 +83,8 @@ jobs:
           tests/test_money.py
           tests/test_inventory.py
           tests/test_reporting.py
+      - name: Run tests with coverage
+        run: uv run coverage run -m pytest
       - name: отчёт о покрытии
         if: matrix.python-version == '3.12'
         run: uv run coverage report

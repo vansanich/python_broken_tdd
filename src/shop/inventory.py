@@ -31,17 +31,12 @@ def reserve_units(
     return reserved
 
 
-
-
 def low_stock_items(
     stock: dict[str, int],
     threshold: int = DEFAULT_LOW_STOCK_THRESHOLD,
 ) -> list[str]:
-    return [
-        sku
-        for sku, count in sorted(stock.items())
-        if count < threshold
-    ]
+    return [sku for sku, count in sorted(stock.items()) if count < threshold]
+
 
 def write_off(
     stock: dict[str, int],
